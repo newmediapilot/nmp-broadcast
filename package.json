@@ -5,13 +5,13 @@
   "main": "src/index.js",
   "nmpBroadcast": {
     "twitter": {
-      "message": "Beep Boop #testing"
+      "message": "Beep Boop #testing #twitter"
     },
     "facebook": {
-      "message": "Beep Boop on Facebook!"
+      "message": "Beep Boop on #testing #facebook!"
     },
     "instagram": {
-      "message": "Beep Boop on Instagram!"
+      "message": "Beep Boop on #testing #instagram!"
     }
   },
   "scripts": {
