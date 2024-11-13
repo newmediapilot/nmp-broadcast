@@ -25,17 +25,20 @@ function uploadToTwitter(config) {
                 throw new Error('Missing Twitter API credentials in .env file.');
             }
 
-            // Initialize Twitter API client with credentials from .env
-            const client = new TwitterApi({
-                appKey,
-                appSecret,
-                accessToken,
-                accessSecret: accessTokenSecret,
-            });
+            // Log the configuration to see if `getFileFromImages` is set
+            console.log("Configuration for uploadToTwitter:", JSON.stringify(config.configuration, null, 2));
 
-            // Get the image path and tweet text from config
-            const imagePath = config.configuration.getFileFromImages.result; // Assuming this path is provided
+            // Check if getFileFromImages.result is set
+            const imagePath = config.configuration.broadcast.getFileFromImages?.result;
             const tweetText = config.configuration.broadcast.twitter.message;
+
+            if (!imagePath) {
+                throw new Error('Image path not found in configuration.');
+            }
+
+            if (!tweetText) {
+                throw new Error('Tweet text not found in configuration.');
+            }
 
             // Ensure the image exists
             if (!fs.existsSync(imagePath)) {
@@ -47,6 +50,14 @@ function uploadToTwitter(config) {
 
             // Determine the MIME type of the image (defaults to jpeg if unknown)
             const mimeType = 'image/jpeg'; // You can further refine this if needed
+
+            // Initialize Twitter API client with credentials from .env
+            const client = new TwitterApi({
+                appKey,
+                appSecret,
+                accessToken,
+                accessSecret: accessTokenSecret,
+            });
 
             // Upload the image to Twitter
             const mediaId = await client.v1.uploadMedia(imageBuffer, { mimeType });
@@ -79,4 +90,4 @@ function uploadToTwitter(config) {
     });
 }
 
-module.exports = uploadToTwitter;
+module.exports = uploadToTwitter; // Make sure to export the method

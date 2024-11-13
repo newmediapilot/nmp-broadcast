@@ -8,14 +8,8 @@ const handlePromises = async (promiseMethods) => {
     // Create a new ActionConfiguration instance to share data between methods
     const config = new ActionConfiguration();
 
-    for (let i = 0; i < totalPromises; i++) {
-        const promiseMethod = promiseMethods[i];
-
-        // Check if the method has a name property, otherwise stop the flow
-        if (!promiseMethod.name) {
-            throw new Error(`Method at index ${i} does not have a "name" property. Flow stopped.`);
-        }
-
+    // Track the completion of all promises to ensure proper logging
+    const promises = promiseMethods.map(async (promiseMethod, i) => {
         const methodName = promiseMethod.name; // Get method name
 
         // Create the promise by invoking the method
@@ -26,29 +20,31 @@ const handlePromises = async (promiseMethods) => {
 
         try {
             const result = await promise;  // Wait for the promise to resolve
+            // Store the result in the shared configuration object
+            config.setData(methodName, result);
 
-            // Store the result in the configuration object
-            config.setData(methodName, result); // Store result
-
-            // Log the progress with percentage
+            // Log the progress with a dark blue background and white text
             console.log(
-                chalk.bgBlue[process.env.NODE_ENV === 'production' ? 'yellow' : 'whiteBright'](
-                    `handlePromises :: ${methodName} :: ${i + 1} of ${totalPromises} :: ${percentage}%`
-                )
+                chalk.bgBlue.white(`handlePromises :: ${methodName} :: ${i + 1} of ${totalPromises} :: ${percentage}%`) +
+                chalk.green(`\n${methodName} :: result`, result) // Green for the result value
             );
         } catch (error) {
-            // Store the error in the configuration object
-            config.setData(methodName, error); // Store error
-
-            // Log the error with a red background and bright white text
+            // Log error with a dark blue background and white text
             console.error(
-                chalk.bgRed.whiteBright(`handlePromises :: ${methodName} :: error, ${error.message}`)
+                chalk.bgBlue.white(`handlePromises :: ${methodName} :: ${i + 1} of ${totalPromises} :: ${percentage}%`) +
+                chalk.red(`\n${methodName} :: error, ${error.message}`)
             );
         }
-    }
+    });
+
+    // Wait for all promises to finish
+    await Promise.all(promises);
 
     // After all promises are processed, log the final message
-    console.log("\nAll tasks completed");
+    console.log("\nAll tasks completed.");
+
+    // Exit the process after logging the final message
+    process.exit(0);
 };
 
 module.exports = handlePromises;
