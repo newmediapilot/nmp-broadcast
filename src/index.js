@@ -6,8 +6,8 @@ const {getFileFromImages, handlePromises, uploadToTwitter, postToFacebook, logAc
 // Declare the methods in an array (without invoking them)
 const promises = [
     getFileFromImages,
-// uploadToTwitter,
-// postToFacebook,
+    uploadToTwitter,
+    postToFacebook,
 // logActionConfiguration,
 ];
 

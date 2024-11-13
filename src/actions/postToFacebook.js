@@ -49,25 +49,32 @@ async function postToFacebook(config) {
         const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(tweetUrl)}`;
         await page.goto(facebookShareUrl); // Navigate to the share URL
 
-        // Step 4: Wait for the redirect to share_channel page
-        await page.waitForNavigation({ waitUntil: 'domcontentloaded' }); // Wait for the page to redirect
+        // Step 4: Wait for the URL to change and verify we're on the "share_channel" page
+        await page.waitForTimeout(3000); // Wait for 3 seconds to allow the redirect
 
-        // Check if the URL has redirected to the share_channel page
         const currentUrl = page.url();
-        if (!currentUrl.includes("share_channel")) {
+        if (!currentUrl.includes('share_channel')) {
             throw new Error(`Unexpected redirect. Current URL: ${currentUrl}`);
         }
 
-        // Step 5: Wait for the text "Create a post" to appear (ensure the page is ready)
-        await page.waitForSelector('text="Create a post"', { timeout: 5000 }); // Wait for "Create a post" text to appear
+        // Step 5: Wait for the "Create post" text to appear
+        const postButton = await page.locator('text="Create a post"');
+        await postButton.waitFor({ state: 'visible', timeout: 5000 }); // Wait for the "Create a post" button to be visible
 
-        // Step 6: Type the message in the textarea
-        await page.fill('textarea', fullPostText); // Type the message in the textarea
+        // Step 6: Paste the full message into the textarea
+        await page.keyboard.type(fullPostText); // Paste the full post message into the textarea
 
-        // Step 7: Submit the post (by simulating hitting Enter)
-        await page.keyboard.press('Enter'); // Press Enter to submit the post
+        // Step 7: Click the "Share" button (a span element containing the text "Share")
+        await page.evaluate(() => {
+            const shareButton = [...document.querySelectorAll('span')].find(span => span.textContent === 'Share');
+            if (shareButton) {
+                shareButton.click(); // Click the "Share" button
+            } else {
+                throw new Error('Share button not found.');
+            }
+        });
 
-        // Step 8: Wait for a moment to ensure the post is submitted
+        // Step 8: Wait for a moment to ensure the post is published
         await page.waitForTimeout(5000); // Wait for the post to be published
 
         console.log('Post has been published successfully!');

@@ -12,6 +12,9 @@
     },
     "instagram": {
       "message": "Beep Boop on #testing #instagram!"
+    },
+    "uploadToTwitter" : {
+      "result" : "https://x.com/RealmFizz"
     }
   },
   "scripts": {
