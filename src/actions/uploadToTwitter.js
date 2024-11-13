@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 /**
- * Uploads an image and posts a tweet with text using credentials from the .env file
+ * Uploads an image and posts a tweet with text using credentials from .env file
  * @param {object} config - The configuration object containing the Twitter API credentials and tweet message
  * @returns {Promise<void>}
  */
@@ -19,7 +19,6 @@ async function uploadToTwitter(config) {
         const accessToken = process.env.TWITTER_ACCESS_TOKEN;
         const accessTokenSecret = process.env.TWITTER_ACCESS_TOKEN_SECRET;
 
-        // Ensure that all required credentials are present
         if (!appKey || !appSecret || !accessToken || !accessTokenSecret) {
             throw new Error('Missing Twitter API credentials in .env file.');
         }
@@ -57,6 +56,12 @@ async function uploadToTwitter(config) {
         });
 
         console.log(`${methodName} :: Tweet posted: ${tweet.data.text}`);
+
+        // Save the tweet URL to the config
+        const tweetUrl = `https://twitter.com/${tweet.data.author_id}/status/${tweet.data.id}`;
+        config.configuration.broadcast.tweetURL = tweetUrl; // Save the tweet URL to config
+
+        console.log(`${methodName} :: Tweet URL saved to config: ${tweetUrl}`);
     } catch (error) {
         console.error(`${methodName} :: Error posting tweet:`, error.message);
     }
