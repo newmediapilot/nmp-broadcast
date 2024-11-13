@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const chalk = require('chalk'); // Import chalk for color formatting
 
 class ActionConfiguration {
     constructor() {
@@ -37,10 +38,16 @@ class ActionConfiguration {
 
     // Add or update data in the configuration
     setData(methodName, result) {
+        // Log in bright blue with the specified prefix
+        console.log(chalk.bgBlue.whiteBright(`ActionConfiguration :: setData ${methodName} :: result:`, result));
+
         if (!this.configuration[methodName]) {
             this.configuration[methodName] = {}; // Initialize if it doesn't exist
         }
         this.configuration[methodName].result = result; // Set the result under the method name
+
+        // Log the updated data in an "orange" background with black text (using RGB values)
+        console.log(chalk.bgRgb(255, 165, 0).black(JSON.stringify(this.configuration[methodName], null, 2))); // Use RGB for orange background
     }
 
     // Get the stored result for a method

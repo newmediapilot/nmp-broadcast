@@ -7,7 +7,7 @@ const path = require('path');
 /**
  * Posts to Facebook using Playwright, including the tweet URL in the post
  * @param {object} config - The configuration object containing the Facebook credentials and tweet URL
- * @returns {Promise<void>}
+ * @returns {Promise<void>} - The result of the post (success or failure)
  */
 async function postToFacebook(config) {
     const methodName = 'postToFacebook'; // Set method name for logging
@@ -21,8 +21,8 @@ async function postToFacebook(config) {
             throw new Error('Facebook credentials are missing in the .env file.');
         }
 
-        // Retrieve tweet URL from config (this was saved by uploadToTwitter)
-        const tweetUrl = config.configuration.broadcast.tweetURL;
+        // Retrieve tweet URL from the config (now it's under uploadToTwitter.result)
+        const tweetUrl = config.configuration.broadcast.uploadToTwitter.result;
         const postText = config.configuration.broadcast.facebook.message;
 
         if (!tweetUrl) {
@@ -49,24 +49,33 @@ async function postToFacebook(config) {
         const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(tweetUrl)}`;
         await page.goto(facebookShareUrl); // Navigate to the share URL
 
-        // Step 4: Wait for the post textarea to be available
-        await page.waitForSelector('textarea'); // Wait for any textarea element
+        // Step 4: Wait for the redirect to share_channel page
+        await page.waitForNavigation({ waitUntil: 'domcontentloaded' }); // Wait for the page to redirect
 
-        // Step 5: Type the message (fullPostText) in the textarea
-        await page.fill('textarea', fullPostText); // Type the message in the first textarea found
+        // Check if the URL has redirected to the share_channel page
+        const currentUrl = page.url();
+        if (!currentUrl.includes("share_channel")) {
+            throw new Error(`Unexpected redirect. Current URL: ${currentUrl}`);
+        }
 
-        // Step 6: Submit the post (by simulating hitting Enter)
+        // Step 5: Wait for the text "Create a post" to appear (ensure the page is ready)
+        await page.waitForSelector('text="Create a post"', { timeout: 5000 }); // Wait for "Create a post" text to appear
+
+        // Step 6: Type the message in the textarea
+        await page.fill('textarea', fullPostText); // Type the message in the textarea
+
+        // Step 7: Submit the post (by simulating hitting Enter)
         await page.keyboard.press('Enter'); // Press Enter to submit the post
 
-        // Step 7: Wait for a moment to ensure the post is submitted
+        // Step 8: Wait for a moment to ensure the post is submitted
         await page.waitForTimeout(5000); // Wait for the post to be published
 
         console.log('Post has been published successfully!');
-
-        // Step 8: Close the browser
-        await browser.close();
+        return; // No need to return anything, as this is successful
     } catch (error) {
+        // Log the error and throw it so that handlePromises can catch it and log it in red
         console.error(`${methodName} :: Error posting to Facebook:`, error.message);
+        throw error; // Rethrow the error to propagate it to handlePromises
     }
 }
 

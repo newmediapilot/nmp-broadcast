@@ -19,7 +19,8 @@ const logActionConfiguration = (config) => {
         // Space below the message
         console.log('\n');
 
-        resolve('ActionConfiguration logged successfully');
+        // Resolve with the contents of config
+        resolve(config); // Resolve with the entire config object
     });
 };
 
