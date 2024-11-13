@@ -1,12 +1,10 @@
-// index.js
-const getFileFromImages = require('./actions/getFileFromImages');
+require('dotenv').config();
 
-// Assign the returned path to a variable
-const imagePath = getFileFromImages();
+// Importing functions from the actions barrel
+const { getFileFromImages, handlePromises, completionMessage } = require('./actions');
 
-// Log the result or use it for further processing
-if (imagePath) {
-    console.log('Image found:', imagePath);
-} else {
-    console.log('No image files found.');
-}
+// Array of promises (for now, just getFileFromImages as the first member)
+const promises = [getFileFromImages(), completionMessage()];
+
+// Start processing promises
+handlePromises(promises);
