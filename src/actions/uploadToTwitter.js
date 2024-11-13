@@ -3,6 +3,7 @@ require('dotenv').config(); // Load environment variables from .env
 const { TwitterApi } = require('twitter-api-v2');
 const fs = require('fs');
 const path = require('path');
+const chalk = require('chalk'); // Import chalk for color formatting
 
 /**
  * Uploads an image and posts a tweet with text using credentials from .env file
@@ -62,12 +63,17 @@ function uploadToTwitter(config) {
             resolve(tweet.data.text); // Resolving with the tweet text
 
         } catch (error) {
-            // Check if the error is a rate-limiting error (HTTP 429)
-            if (error.response && error.response.status === 429) {
+            // Check if the error message contains the string '429'
+            if (error.message.includes('429')) {
                 error.message = `[RATE_LIMITER] ${error.message}`; // Append [RATE_LIMITER] to the error message
             }
 
-            console.error(`${methodName} :: Error posting tweet:`, error.message);
+            // Log the error with a hot color background (orange) and bright white text
+            console.error(
+                chalk.bgRgb(255, 69, 0).whiteBright( // Orange background with bright white text
+                    `${methodName} :: Error posting tweet: ${error.message}`
+                )
+            );
             reject(new Error(error.message)); // Reject the promise with the modified error message
         }
     });

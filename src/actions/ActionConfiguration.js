@@ -29,7 +29,8 @@ class ActionConfiguration {
                 this.configuration.broadcast = { ...this.configuration.broadcast, ...packageJson.nmpBroadcast };
             }
 
-            console.log('Configuration loaded:', this.configuration);
+            // Log "Configuration loaded" message with a bright orange background and black text
+            console.log(chalk.bgRgb(255, 165, 0).black('Configuration loaded:', JSON.stringify(this.configuration, null, 2)));
         } catch (error) {
             console.error('Error loading configuration from package.json:', error.message);
             throw error;
@@ -38,8 +39,8 @@ class ActionConfiguration {
 
     // Add or update data in the configuration
     setData(methodName, result) {
-        // Log in bright blue with the specified prefix
-        console.log(chalk.bgBlue.whiteBright(`ActionConfiguration :: setData ${methodName} :: result:`, result));
+        // Log in teal/aqua background with bright white text
+        console.log(chalk.bgRgb(0, 128, 128).whiteBright(`ActionConfiguration :: setData ${methodName} :: result:`, result));
 
         if (!this.configuration[methodName]) {
             this.configuration[methodName] = {}; // Initialize if it doesn't exist

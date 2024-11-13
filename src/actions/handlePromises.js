@@ -1,7 +1,7 @@
 const chalk = require('chalk');
 const ActionConfiguration = require('./ActionConfiguration'); // Correctly import ActionConfiguration
 
-// Function to handle an array of promises and log results or errors
+// Function to handle an array of promises and log progress percentage
 const handlePromises = async (promiseMethods) => {
     const totalPromises = promiseMethods.length;
 
@@ -27,25 +27,28 @@ const handlePromises = async (promiseMethods) => {
         try {
             const result = await promise;  // Wait for the promise to resolve
 
-            // Store the result in the shared configuration object
-            config.setData(methodName, result);
+            // Store the result in the configuration object
+            config.setData(methodName, result); // Store result
 
-            // Log the progress with a dark blue background and white text
+            // Log the progress with percentage
             console.log(
-                chalk.bgBlue.white(`handlePromises :: ${methodName} :: ${i + 1} of ${totalPromises} :: ${percentage}%`) +
-                chalk.green(`\n${methodName} :: result`, result) // Green for the result value
+                chalk.bgBlue[process.env.NODE_ENV === 'production' ? 'yellow' : 'whiteBright'](
+                    `handlePromises :: ${methodName} :: ${i + 1} of ${totalPromises} :: ${percentage}%`
+                )
             );
         } catch (error) {
-            // Log error with a dark blue background and white text
+            // Store the error in the configuration object
+            config.setData(methodName, error); // Store error
+
+            // Log the error with a red background and bright white text
             console.error(
-                chalk.bgBlue.white(`handlePromises :: ${methodName} :: ${i + 1} of ${totalPromises} :: ${percentage}%`) +
-                chalk.red(`\n${methodName} :: error, ${error.message}`)
+                chalk.bgRed.whiteBright(`handlePromises :: ${methodName} :: error, ${error.message}`)
             );
         }
     }
 
     // After all promises are processed, log the final message
-    console.log("\nAll tasks completed, see below for result:");
+    console.log("\nAll tasks completed");
 };
 
 module.exports = handlePromises;
