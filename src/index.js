@@ -1,10 +1,10 @@
 require('dotenv').config();
 
 // Importing functions from the actions barrel
-const { getFileFromImages, handlePromises, logActionConfiguration } = require('./actions');
+const { getFileFromImages, handlePromises, uploadToTwitter } = require('./actions');
 
 // Declare the methods in an array (without invoking them)
-const promises = [getFileFromImages, logActionConfiguration];
+const promises = [getFileFromImages, uploadToTwitter]; // Correct: pass function references
 
 // Start processing promises
 handlePromises(promises);

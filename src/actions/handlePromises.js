@@ -1,6 +1,5 @@
 const chalk = require('chalk');
-const ActionConfiguration = require('./ActionConfiguration'); // Import ActionConfiguration
-const logActionConfiguration = require('./logActionConfiguration'); // Import the new method
+const ActionConfiguration = require('./ActionConfiguration'); // Correctly import ActionConfiguration
 
 // Function to handle an array of promises and log results or errors
 const handlePromises = async (promiseMethods) => {
@@ -10,8 +9,14 @@ const handlePromises = async (promiseMethods) => {
     const config = new ActionConfiguration();
 
     for (let i = 0; i < totalPromises; i++) {
-        const promiseMethod = promiseMethods[i];
-        const methodName = promiseMethod.name || 'Unknown Method'; // Get method name (if available)
+        const promiseMethod = promiseMethods[i];console.log("promiseMethod", promiseMethod);
+
+        // Check if the method has a name property, otherwise stop the flow
+        if (!promiseMethod.name) {
+            throw new Error(`Method at index ${i} does not have a "name" property. Flow stopped.`);
+        }
+
+        const methodName = promiseMethod.name; // Get method name
 
         // Create the promise by invoking the method
         const promise = promiseMethod(config); // Pass config to method
