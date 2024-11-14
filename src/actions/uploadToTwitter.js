@@ -65,10 +65,19 @@ function uploadToTwitter(config) {
                 media: { media_ids: [mediaId] },
             });
 
-            console.log(`${methodName} :: Tweet posted: ${tweet.data.text}`);
+            // Extract the URL from the tweet's text
+            const tweetUrlMatch = tweetText.match(/https?:\/\/[^\s]+/); // Regex to match any URL
 
-            // Resolve the promise with the tweet text
-            resolve(tweet.data.text); // Resolving with the tweet text
+            if (tweetUrlMatch && tweetUrlMatch[0]) {
+                const tweetUrl = tweetUrlMatch[0]; // Extract the URL
+                console.log(`${methodName} :: Tweet posted: ${tweetText}`);
+                console.log(`${methodName} :: Tweet URL: ${tweetUrl}`);
+
+                // Resolve the promise with the extracted URL
+                resolve(tweetUrl); // Resolving with the tweet URL
+            } else {
+                throw new Error('No URL found in the tweet text.');
+            }
 
         } catch (error) {
             // Check if the error message contains the string '429'
