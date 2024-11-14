@@ -7,5 +7,5 @@ const {getFileFromImages, handlePromises, uploadToTwitter, postToFacebook} = req
 handlePromises([
     getFileFromImages,
     uploadToTwitter,
-    // postToFacebook
+    postToFacebook
 ]);
