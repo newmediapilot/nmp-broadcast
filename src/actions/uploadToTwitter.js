@@ -25,9 +25,6 @@ function uploadToTwitter(config) {
                 throw new Error('Missing Twitter API credentials in .env file.');
             }
 
-            // Log the configuration to see if `getFileFromImages` is set
-            console.log("Configuration for uploadToTwitter:", JSON.stringify(config.configuration, null, 2));
-
             // Check if getFileFromImages.result is set
             const imagePath = config.configuration.broadcast.getFileFromImages?.result;
             const tweetText = config.configuration.broadcast.twitter.message;

@@ -9,7 +9,8 @@ const handlePromises = async (promiseMethods) => {
     const config = new ActionConfiguration();
 
     // Track the completion of all promises to ensure proper logging
-    const promises = promiseMethods.map(async (promiseMethod, i) => {
+    for (let i = 0; i < totalPromises; i++) {
+        const promiseMethod = promiseMethods[i];
         const methodName = promiseMethod.name; // Get method name
 
         // Create the promise by invoking the method
@@ -19,7 +20,8 @@ const handlePromises = async (promiseMethods) => {
         const percentage = Math.round(((i + 1) / totalPromises) * 100);
 
         try {
-            const result = await promise;  // Wait for the promise to resolve
+            const result = await promise;  // Wait for the promise to resolve one at a time
+
             // Store the result in the shared configuration object
             config.setData(methodName, result);
 
@@ -35,10 +37,7 @@ const handlePromises = async (promiseMethods) => {
                 chalk.red(`\n${methodName} :: error, ${error.message}`)
             );
         }
-    });
-
-    // Wait for all promises to finish
-    await Promise.all(promises);
+    }
 
     // After all promises are processed, log the final message
     console.log("\nAll tasks completed.");

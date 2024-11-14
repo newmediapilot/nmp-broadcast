@@ -6,7 +6,7 @@ const ROOT_DIR = process.cwd();
 const IMAGES_DIR = path.join(ROOT_DIR, 'images'); // Folder where images are stored
 
 // Function to get the first image file, now returning a promise
-const getFileFromImages = () => {
+const getFileFromImages = (config) => {
     return new Promise((resolve, reject) => {
         try {
             // Read all files in the images directory
